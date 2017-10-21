@@ -9,7 +9,7 @@ const todos = [{
   _id: ObjectID(),
   text:'First test todo'
 },{
-  _id: ObjectID(),
+  _id: new ObjectID(),
   text:'Second test todo'
 }]
 
@@ -105,3 +105,42 @@ describe('GET /todos/:id',() => {
   })
 
 })
+
+describe('DELETE /todos/:id',() => {
+  var hexId = todos[0]._id.toHexString();
+  it('Should remove a todo',(done) => {
+    request(app)
+    .delete(`/todos/${hexId}`)
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todo._id).toBe(hexId);
+    })
+    .end((err,res) => {
+      if (err) {
+        return done(err);
+      }
+
+      Todo.findById(hexId).then((todo) => {
+        // expect(todo).toBe(null);
+        expect(todo).toNotExist();
+        done();
+      }).catch((err) => {
+        return done(err);
+      });
+    });
+  });
+
+  it('Should return 404 if todo not found',(done) => {
+    request(app)
+    .delete(`/todos/${ObjectID().toHexString()}`)
+    .expect(404)
+    .end(done);
+  });
+
+  it('Should return 404 if object id is invalid',(done) => {
+    request(app)
+    .delete(`/todos/123`)
+    .expect(404)
+    .end(done);
+  })
+});
