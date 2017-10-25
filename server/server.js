@@ -13,6 +13,7 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
+//#region /todos route APIs
 app.post('/todos',(req,res) => {
   // console.log(req.body);
   var todo = new Todo({
@@ -89,6 +90,22 @@ app.patch('/todos/:id',(req,res) => {
     res.status(400).send();
   })
 })
+//#endregion
+
+//#region /users route APIs
+app.post('/users',(req,res) => {
+  body = _.pick(req.body, ['email','password'])
+  var user = new User(body);
+  user.save().then(() => {
+    // console.log(doc.toCustomJSON());
+    return user.genarateAuthToken();
+  }).then((token) => {
+    res.header('x-auth',token).send(user.toCustomJSON());
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
+})
+//#endregion
 
 app.listen(port,() => {
   console.log(`Started on port ${port}`);
