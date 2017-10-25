@@ -12,7 +12,7 @@ var UserSchema = new mongoose.Schema({
     unique: true,
     validate: {
       // validator: validator.isEmail,
-      validator: value=>isEmail(value),
+      validator: value=>validator.isEmail(value),
       message: '{VALUE} là email không khả dụng!'
     }
   },
@@ -34,6 +34,22 @@ var UserSchema = new mongoose.Schema({
     }
   ]
 });
+
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
+  try {
+    decoded=jwt.verify(token,"abc123")
+  } catch (e) {
+    return Promise.reject("Token is invalid!");
+  }
+
+  return User.findOne({
+    "_id":decoded._id,
+    "tokens.access":"auth",
+    "tokens.token":token
+  });
+};
 
 // UserSchema.methods.toJSON=function () {
 //   var user = this;
