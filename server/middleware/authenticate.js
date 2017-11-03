@@ -5,15 +5,15 @@ var authenticate = (req,res,next) => {
 
   User.findByToken(token).then((user) => {
     if (!user) {
-      return Promise.reject("User not found!");
+      return Promise.reject("Please login!");
     }
     // req.user = user.toCustomJSON();
-    req.user = user.toCustomJSON();
+    req.user = user;
     req.token = token;
     next();
-  }).catch((e) => {
+  }).catch((err) => {
     // console.log(e);
-    res.status(401).send({e});
+    res.status(401).send({err});
   });
 }
 
