@@ -69,10 +69,6 @@ UserSchema.statics.findByCredentials = function (email,password) {
   });
 };
 
-// UserSchema.methods.toJSON=function () {
-//   var user = this;
-//   return _.pick(user,['_id','email']);
-// };
 UserSchema.methods.toCustomJSON=function () {
   var user = this;
   return _.pick(user,['_id','email']);

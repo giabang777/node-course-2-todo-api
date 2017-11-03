@@ -1,8 +1,6 @@
 const request = require('supertest');
 const expect = require('expect');
-const {
-  ObjectID
-} = require('mongodb');
+const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
@@ -226,7 +224,7 @@ describe('GET /users/profile',() => {
     // .set('x-auth',users[1],tokens[0].token)
     .expect(401)
     .expect((res) => {
-      expect(res.body.e).toEqual(expect.any(String));
+      expect(res.body.err).toEqual(expect.any(String));
       // expect(res.body).toEqual({});
     })
     .end(done);
@@ -326,4 +324,29 @@ describe('POST /users/login',() => {
       }).catch((err) => done(err));
     });
   });
+});
+
+describe('POST /users/profile/token',() => {
+  it('Should logout and delete token',(done) => {
+    request(app)
+    .delete('/users/profile/token')
+    .set('x-auth',users[0].tokens[0].token)
+    .expect(200)
+    .end((err,res) => {
+      if (err) {
+        return done(err);
+      }
+      User.findById(users[0]._id).then((user) => {
+        expect(user.tokens.length).toBe(0);
+        done();
+      }).catch((err) => done(err))
+    });
+  });
+
+  it('Should return 401 when user Loged out',(done) => {
+    request(app)
+    .delete('/users/profile/token')
+    .expect(401)
+    .end(done);
+  })
 })
