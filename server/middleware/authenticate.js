@@ -5,7 +5,7 @@ var authenticate = (req,res,next) => {
 
   User.findByToken(token).then((user) => {
     if (!user) {
-      return Promise.reject("Please login!");
+      return Promise.reject("[mdw] Please login!");
     }
     // req.user = user.toCustomJSON();
     req.user = user;
