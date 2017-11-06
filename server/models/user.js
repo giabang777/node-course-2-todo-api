@@ -40,7 +40,7 @@ UserSchema.statics.findByToken = function (token) {
   var User = this;
   var decoded;
   try {
-    decoded=jwt.verify(token,"abc123")
+    decoded=jwt.verify(token,process.env.JWT_SECRET)
   } catch (e) {
     return Promise.reject("[mdu] User not login!");
   }
@@ -77,7 +77,7 @@ UserSchema.methods.toCustomJSON=function () {
 UserSchema.methods.genarateAuthToken = function () {
   var user = this;
   var access = "auth";
-  var token = jwt.sign({_id:user._id,access},"abc123").toString();
+  var token = jwt.sign({_id:user._id,access},process.env.JWT_SECRET).toString();
   user.tokens.push({
     access,
     token
